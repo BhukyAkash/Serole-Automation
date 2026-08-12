@@ -1,0 +1,15 @@
+tests/
+SIT/
+
+.env
+
+venv/
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+Auto_steps.md
+PC - Automation.mp4
+PC - UW.mp4
+PC & MC - SAP.mp4

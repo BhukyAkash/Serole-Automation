@@ -1,0 +1,19 @@
+# # Python
+__pycache__/
+*.pyc
+# downloads/
+# test_mail.py
+# test_pa1.py
+# #mykad_id.py
+# test_tpm_mail.py
+traces/
+# test_demo.py
+# test_policy.py
+# NetworkLogs/
+# network_logs.py
+# SAP/
+# test_sap.py
+NetworkLogs/
+Endorsement/
+test_demo.py
+test_part.py
