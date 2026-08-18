@@ -16,6 +16,7 @@ DOWNLOADS_DIR = os.path.join(os.path.dirname(__file__), "downloads")  # D:\Autom
 # ---- Load PC flags from config ----
 flags = AUTOMATION_FLAGS["CV"]
 
+# pytest -s nb\test_cv.py
 def test_cv_motor(page):
     vehicle_data = None
     try:

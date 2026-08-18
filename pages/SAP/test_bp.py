@@ -22,12 +22,11 @@ def get_id_number(sheet_name):
     id_number = str(b_val).replace("-", "")
     return id_number, sheet, wb, excel_path, row
 
-
 def save_bp(sheet, wb, excel_path, row, bp):
     sheet.cell(row=row, column=3).value = bp
     wb.save(excel_path)
 
-
+# pytest -s SAP\test_bp.py::test_bp_pc
 @pytest.mark.no_network_logger
 def test_bp_pc(page):
     try:
@@ -48,7 +47,6 @@ def test_bp_pc(page):
             print("Business Partner: ", bp)
             save_bp(sheet, wb, excel_path, row, bp)
         else:
-            # bp = frame.get_by_text("0 Persons Found", exact=True)
             bp = "No BP Found"
             print("Business Partner:", bp)
             save_bp(sheet,wb,excel_path,row,bp)
@@ -72,10 +70,15 @@ def test_bp_mc(page):
         frame.get_by_role("textbox", name="ID number").fill(id_number)
         frame.get_by_role("button", name="Start").click()
 
-        bp = frame.locator("span[id='grid#C105#1,1#if']").inner_text().strip()
-        print("Business Partner: ", bp)
-
-        save_bp(sheet, wb, excel_path, row, bp)
+        partner = frame.locator("span[id='grid#C105#1,1#if']")
+        if partner.is_visible():
+            bp  = partner.inner_text().strip()
+            print("Business Partner: ", bp)
+            save_bp(sheet, wb, excel_path, row, bp)
+        else:
+            bp = "No BP Found"
+            print("Business Partner:", bp)
+            save_bp(sheet,wb,excel_path,row,bp)
 
     finally:
         page.locator("#meAreaHeaderButton").click()

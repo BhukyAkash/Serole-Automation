@@ -320,8 +320,7 @@ def release(frame, page, product, contract_start):
     page.wait_for_timeout(3000)
     frame.get_by_role("button", name="Continue Release").click()
 
-    page.wait_for_timeout(8000)
-
+    page.wait_for_timeout(13000)
     # -------- Check BadJPJ Request --------
     bad_jpj = frame.get_by_text("BadJPJ Request")
 

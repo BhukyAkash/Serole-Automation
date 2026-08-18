@@ -20,7 +20,11 @@ def test_mc(page):
         sap.mc_product(frame, page)
 
         # -------- BP & Commission Contract --------
-        sap.bp(frame, page, info["BP_MC"])
+        if str(info["BP_MC"]).strip().upper() == "NO BP FOUND":
+            print("No BP Found - Skipping MC automation")
+            return
+        else:
+            sap.bp(frame, page, info["BP_MC"])
 
         # -------- Contract Level --------
         contract_start = sap.mc_contract(frame, page)

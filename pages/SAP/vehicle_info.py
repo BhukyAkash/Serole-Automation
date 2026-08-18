@@ -8,15 +8,15 @@ sheet_pc = wb["PC"]
 sheet_mc = wb["MC"]
 
 # --- PC Test Data ----
-cell_pc = 26
+cell_pc = 32
 # --- MC Test Data ---- 
-cell_mc = 5
+cell_mc = 2
 
 info = {
     "BP_PC" : sheet_pc.cell(row=cell_pc, column=3).value,
     "BP_MC" : sheet_mc.cell(row=cell_mc, column=3).value,
     "CC"    : "2210001629",
-    "date"  : "01.06.2026",
+    "date"  : "01.05.2026",
 
     "MC" : {
         "pm_id"         : "MTPLMC000000",
@@ -29,9 +29,9 @@ info = {
     "PC" : {
         "pm_id"         : "MTPLPC000000",
         "vehicle_no"    : sheet_pc.cell(row=cell_pc, column=1).value,
-        "si"            : "85000",  
+        "si"            : "25000",  
         "coverage_type" : "Comprehensive",             # "Comprehensive"    "TP, Fire & Theft"
-        "covpac"        : "Comprehensive",  # "Comprehensive"    "Third Party, Fire and Theft"
+        "covpac"        : "Comprehensive",  # "Comprehensive"    "Third Party Fire & Theft"
         }
 }
 
