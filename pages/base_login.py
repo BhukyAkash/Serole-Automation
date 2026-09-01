@@ -112,48 +112,55 @@ def manager_approval(manager_page):
     manager_page.close()
 
 def issue_policy(page):
-        # === PROCEED TO POLICY ISSUANCE ===
-        page.get_by_role("button", name="Proceed to Policy Issuance").click()
+    page.get_by_role("button", name="Proceed to Policy Issuance").click()
 
-        # ==== POLICY ISSUANCE ====
-        page.get_by_role("button", name="Issue Policy").click()
-        print("Issue Policy button clicked")
-        page.wait_for_timeout(30000)
+    # First click
+    page.get_by_role("button", name="Issue Policy").click()
+    print("Issue Policy button clicked")
 
-        # ---- Wait until Policy number is released  ----
-        max_wait = 100
-        interval = 35
-        elapsed = 0     
-        policy_number = "-"
+    max_wait = 100
+    interval = 35
+    elapsed = 0
+    policy_number = "-"
 
-        while elapsed < max_wait:
-            try:
-                policy_element = page.locator("span.fw-bold").filter(has_text="Policy #:")
-                policy_element.wait_for(state="visible", timeout=10000)
-                policy_text = policy_element.inner_text().strip()
-                policy_number = policy_text.replace("Policy #:", "").strip()
-                if policy_number and policy_number != "-":
-                    print("Policy Number:", policy_number)
-                    break
-                else:
-                    print(f"Policy not yet issued, retrying... ({elapsed}s)")
-            except:
-                print(f"Policy locator not found, retrying... ({elapsed}s)")
+    while elapsed < max_wait:
+        # Wait 35 seconds for policy number
+        page.wait_for_timeout(35000)
+        elapsed += interval
 
-            # Only reload if policy not found
-            page.reload()
+        # Check Policy Number
+        try:
+            policy_element = page.locator(
+                "span.fw-bold"
+            ).filter(has_text="Policy #:")
+
+            policy_text = policy_element.inner_text().strip()
+            policy_number = policy_text.replace("Policy #:", "").strip()
+
+            if policy_number and policy_number != "-":
+                print("Policy Number:", policy_number)
+                break
+
+        except:
+            print(f"Policy still issuing... ({elapsed}s)")
+
+        # Policy number not found → reload
+        page.reload()
+
+        # After reload, check Issue Policy button
+        try:
             ip = page.get_by_role("button", name="Issue Policy")
-            if ip.is_visible():
-                ip.click()
-            page.wait_for_timeout(interval * 1000)
-            elapsed += interval
+            ip.wait_for(state="visible", timeout=10000)
+            ip.click()
+        except:
+            print("Issue Policy button not visible after reload")
 
-        if policy_number == "-":
-            print("Policy not issued after 2 minutes, something went wrong")
+    if policy_number == "-":
+        print("Policy not issued after maximum wait")
 
-        DATA["policy"] = policy_number
+    DATA["policy"] = policy_number
 
-        return policy_number
+    return policy_number
 
 def quote_letter(page):
     # ---- Generate Quote Flow ----
