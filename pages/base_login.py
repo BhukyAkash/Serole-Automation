@@ -118,48 +118,43 @@ def issue_policy(page):
     page.get_by_role("button", name="Issue Policy").click()
     print("Issue Policy button clicked")
 
-    max_wait = 100
+    max_attempts = 5      # tune as needed
     interval = 35
-    elapsed = 0
     policy_number = "-"
 
-    while elapsed < max_wait:
-        # Wait 35 seconds for policy number
-        page.wait_for_timeout(35000)
-        elapsed += interval
+    for attempt in range(max_attempts):
+
+        if attempt > 0:
+            # Reload and re-click BEFORE waiting, so this click
+            # always gets a wait+check in the same iteration
+            page.reload()
+            try:
+                ip = page.get_by_role("button", name="Issue Policy")
+                ip.wait_for(state="visible", timeout=10000)
+                ip.click()
+                print(f"Issue Policy clicked again (attempt {attempt + 1})")
+            except:
+                print("Issue Policy button not visible after reload")
+
+        # Wait for policy number
+        page.wait_for_timeout(interval * 1000)
 
         # Check Policy Number
         try:
-            policy_element = page.locator(
-                "span.fw-bold"
-            ).filter(has_text="Policy #:")
-
+            policy_element = page.locator("span.fw-bold").filter(has_text="Policy #:")
             policy_text = policy_element.inner_text().strip()
             policy_number = policy_text.replace("Policy #:", "").strip()
 
             if policy_number and policy_number != "-":
                 print("Policy Number:", policy_number)
                 break
-
         except:
-            print(f"Policy still issuing... ({elapsed}s)")
-
-        # Policy number not found → reload
-        page.reload()
-
-        # After reload, check Issue Policy button
-        try:
-            ip = page.get_by_role("button", name="Issue Policy")
-            ip.wait_for(state="visible", timeout=10000)
-            ip.click()
-        except:
-            print("Issue Policy button not visible after reload")
+            print(f"Policy still issuing... (attempt {attempt + 1})")
 
     if policy_number == "-":
-        print("Policy not issued after maximum wait")
+        print("Policy not issued after maximum attempts")
 
     DATA["policy"] = policy_number
-
     return policy_number
 
 def quote_letter(page):
