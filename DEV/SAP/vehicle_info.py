@@ -1,49 +1,33 @@
-import os
 from datetime import datetime
-from openpyxl import load_workbook
-
-excel_path = os.path.join(os.path.dirname(__file__), "BP Test Data.xlsx")
-wb = load_workbook(excel_path)
-
-sheet_pc = wb["PC"]
-sheet_mc = wb["MC"]
-
-# pytest -s SAP\test_motor.py::test_pc
-# pytest -s SAP\test_motor.py::test_mc
-# --- PC Test Data ----
-cell_pc = 22
-# --- MC Test Data ---- 
-cell_mc = 10
-
 comp = "Comprehensive"
 tpft = "Third Party Fire & Theft"
-tpl = "Third Party Liability"
+tpl  = "Third Party Liability"
+# pytest -s SAP\test_motor.py::test_pc
+# pytest -s SAP\test_motor.py::test_mc
 
 today = datetime.now().strftime("%d.%m.%y")
 
 info = {
-    "BP_PC" : sheet_pc.cell(row=cell_pc, column=3).value,
-    "BP_MC" : sheet_mc.cell(row=cell_mc, column=3).value,
-    "CC"    : "2210001629",
-    "date"  : today,        #"01.04.2024"
+    "BP"    : "1000025327",    # "1000025326"    "1000025327"  TFS - Ind-1000024551  Org-1000024653
+    "CC"    : "2210000540",    # "2210000540"    "2210001267"   "2210001238"
+    "date"  : "15.09.2025",
 
     "MC" : {
         "pm_id"         : "MTPLMC000000",
-        "vehicle_no"    : sheet_mc.cell(row=cell_mc, column=1).value,
-        "coverage_type" : comp,
-        "covpac"        : comp,
+        "vehicle_no"    : "VGF3178",
+        "coverage_type" : tpl,
+        "covpac"        : tpl,
         "si"            : "10000"
     },
 
     "PC" : {
         "pm_id"         : "MTPLPC000000",
-        "vehicle_no"    : sheet_pc.cell(row=cell_pc, column=1).value,
-        "si"            : "25000",  
-        "coverage_type" : tpft,
-        "covpac"        : tpft,
+        "vehicle_no"    : "CAPS8H7",
+        "si"            : "25000",
+        "coverage_type" : tpl,
+        "covpac"        : tpl
         }
 }
-
 
 def get_vehicle_info(vehicle_type: str) -> dict:
     if vehicle_type not in info:
