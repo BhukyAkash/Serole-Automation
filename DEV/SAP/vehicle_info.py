@@ -1,22 +1,31 @@
+from datetime import datetime
+comp = "Comprehensive"
+tpft = "Third Party Fire & Theft"
+tpl  = "Third Party Liability"
+# pytest -s SAP\test_motor.py::test_pc
+# pytest -s SAP\test_motor.py::test_mc
+
+today = datetime.now().strftime("%d.%m.%y")
+
 info = {
-    "BP"    : "1000025326",    # "1000025326"    "1000025327"
-    "CC"    : "2210000540",    # "2210000540"    "2210001267"
-    "date"  : "01.01.2024",
+    "BP"    : "1000025327",    # "1000025326"    "1000025327"  TFS - Ind-1000024551  Org-1000024653
+    "CC"    : "2210000540",    # "2210000540"    "2210001267"   "2210001238"
+    "date"  : "15.09.2025",
 
     "MC" : {
         "pm_id"         : "MTPLMC000000",
         "vehicle_no"    : "VGF3178",
-        "coverage_type" : "Comprehensive",     # Third Party
-        "covpac"        : "Comprehensive",       
+        "coverage_type" : tpl,
+        "covpac"        : tpl,
         "si"            : "10000"
     },
 
     "PC" : {
         "pm_id"         : "MTPLPC000000",
-        "vehicle_no"    : "PJC9881",
+        "vehicle_no"    : "CAPS8H7",
         "si"            : "25000",
-        "coverage_type" : "TP, Fire & Theft",             # "Comprehensive"    "TP, Fire & Theft"
-        "covpac"        : "Third Party Fire & Theft",  # "Comprehensive"    "Third Party, Fire and Theft"
+        "coverage_type" : tpl,
+        "covpac"        : tpl
         }
 }
 

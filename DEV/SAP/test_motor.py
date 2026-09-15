@@ -4,7 +4,7 @@ def test_mc(page):
     try:
         print("\n================ SAP - MC Policy============")
         sap.url(page)
-        sap.login(page)
+        user = sap.login(page)
 
         # -------- Storing of SAP Locator --------
         frame = page.locator("iframe[title='Application']").content_frame
@@ -25,8 +25,7 @@ def test_mc(page):
         sap.mc_coverage(frame, page)
 
         # -------- Release Application ----------
-        sap.release(frame, page, "MC", contract_start)
-        page.pause()
+        sap.release(frame, page, "MC", contract_start, user)
 
     finally:
         page.wait_for_timeout(3000)
@@ -39,7 +38,7 @@ def test_pc(page):
     try:
         print("\n================ SAP - PC Policy============")
         sap.url(page)
-        sap.login(page)
+        user = sap.login(page)
 
         # ----- Storing of SAP Locator --------
         frame = page.locator("iframe[title='Application']").content_frame
@@ -60,7 +59,7 @@ def test_pc(page):
         sap.pc_coverage(frame, page)
 
         # -------- Release Application --------
-        sap.release(frame, page, "PC", contract_start)
+        sap.release(frame, page, "PC", contract_start, user)
 
     finally:
         page.wait_for_timeout(3000)
