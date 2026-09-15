@@ -7,8 +7,10 @@ from vehicle_info import info
 def test_mc(page):
     try:
         print("\n================ SAP - MC Policy ============")
+        print(f"Vehicle Number  : {info['MC']['vehicle_no']}")
+        print(f"Business Partner: {info['BP_MC']}")
         sap.url(page)
-        sap.login(page)
+        user = sap.login(page)
 
         # -------- Storing of SAP Locator --------
         frame = page.locator("iframe[title='Application']").content_frame
@@ -33,10 +35,13 @@ def test_mc(page):
         sap.mc_coverage(frame, page)
 
         # -------- Release Application ----------
-        sap.release(frame, page, "MC", contract_start)
+        sap.release(frame, page, "MC", contract_start, user)
 
         # ------- ISM & NCD Service --------
         # sap.service(frame, page)
+
+    except Exception as e:
+        print(f"Test failed: {e}")
 
     finally:
         page.wait_for_timeout(3000)
@@ -50,8 +55,10 @@ def test_mc(page):
 def test_pc(page):
     try:
         print("\n================ SAP - PC Policy ============")
+        print(f"Vehicle Number  : {info['PC']['vehicle_no']}")
+        print(f"Business Partner: {info['BP_PC']}")
         sap.url(page)
-        sap.login(page)
+        user = sap.login(page)
 
         # ----- Storing of SAP Locator --------
         frame = page.locator("iframe[title='Application']").content_frame
@@ -76,10 +83,13 @@ def test_pc(page):
         sap.pc_coverage(frame, page)
 
         # -------- Release Application --------
-        sap.release(frame, page, "PC", contract_start)
+        sap.release(frame, page, "PC", contract_start, user)
 
         # ------- ISM & NCD Service --------
         # sap.service(frame, page)
+
+    except Exception as e:
+        print(f"Test failed: {e}")
 
     finally:
         page.wait_for_timeout(3000)

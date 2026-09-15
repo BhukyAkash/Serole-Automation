@@ -10,8 +10,8 @@ def url(page):
 def login(page):
     #  ------ Credentials -------
     load_dotenv()
-    user = os.getenv("santhosh")
-    password = os.getenv("san_pass")
+    user = os.getenv("apasha")
+    password = os.getenv("apa_uat")    # apa_uat
 
     page.get_by_role("textbox", name="User").click()
     page.get_by_role("textbox", name="User").fill(user)
@@ -23,6 +23,8 @@ def login(page):
     page.get_by_label("Password").fill(password)
     page.get_by_role("button", name="Log On").click()
     page.wait_for_load_state("networkidle")
+
+    return user
 
 def system_date():
     return datetime.now().strftime("%d.%m.%y")
@@ -98,9 +100,8 @@ def mc_contract(frame, page):
     contract_start = frame.locator("input[title='Technical Contract Start']").input_value()
     print(f"Contract Start Date: {contract_start} | End Date: {end_date}")
 
-    # --------- RISK Insured Object ---------
+    # ======== RISK Insured Object ========
     frame.get_by_role("tab", name="Risk").click()
-
     frame.get_by_role("button", name="Detail").click()
     frame.get_by_role("button", name="Create").click()
     frame.get_by_role("textbox", name="Vehicle reg. no.").click()
@@ -108,17 +109,24 @@ def mc_contract(frame, page):
     frame.get_by_role("textbox", name="Vehicle reg. no.").press("Enter")
     page.wait_for_timeout(3000)
 
-    # --------- Year of Manufacturer ----------
-    manufacturer = frame.locator("input[title*='Construction Year of Vehicle']")
-    expect(manufacturer).not_to_have_value("", timeout=30000)
-    manufacture_year = int(manufacturer.input_value())
-    age = datetime.now().year - manufacture_year
+    frame.get_by_role("textbox", name="Vehicle Usage").click()
+    frame.get_by_role("textbox", name="Vehicle Usage").fill("011")
 
-    if age >= 15:
-        manufacturer.fill("2020")
+    # --------- Year of Manufacturer ----------
+    coverage_type = info["coverage_type"]
+    if coverage_type == "Comprehensive":
+        manufacturer = frame.locator("input[title*='Construction Year of Vehicle']")
+        expect(manufacturer).not_to_have_value("", timeout=30000)
+        manufacture_year = int(manufacturer.input_value())
+        age = datetime.now().year - manufacture_year
+        if age >= 15:
+            manufacturer.fill("2020")
+        else:
+            pass
     else:
         pass
 
+    # ----- Duplicate Issuance ----
     page.wait_for_timeout(2000)
     page.keyboard.press("Control+S")
     try:
@@ -141,6 +149,8 @@ def mc_contract(frame, page):
     print(f"Engine Capacity: {engine_capacity} | Seating Capacity: {sc}" )
     frame.get_by_role("textbox", name="Unit Type Required").click()
     frame.get_by_role("option", name="CC CC").click()
+
+    # -------- Complete Business Transaction --------
     page.wait_for_timeout(1000)
     page.keyboard.press("F8")
     page.wait_for_timeout(1000)
@@ -151,6 +161,7 @@ def mc_coverage(frame, page):
     info = get_vehicle_info("MC")
     # ------------ Coverage -------------
     covpac = info["covpac"]
+    print("Coverage: ", covpac)
     page.wait_for_timeout(3000)
     frame.get_by_text(covpac).dblclick()
     frame.get_by_text(covpac, exact=True).click()
@@ -158,17 +169,20 @@ def mc_coverage(frame, page):
     frame.get_by_text(covpac, exact=True).dblclick()
 
     # -------- Limit / Deductible --------
-    frame.get_by_role("tab", name="Limit/Deductible").click()
+    if covpac != "Third Party Liability":
+        frame.get_by_role("tab", name="Limit/Deductible").click()
 
-    field = frame.locator("span[id$='#1,2#if']")
-    sum_insured = field.inner_text().strip()
+        field = frame.locator("span[id$='#1,2#if']")
+        sum_insured = field.inner_text().strip()
 
-    if float(sum_insured.replace(",", "")) == 0:
-        page.wait_for_timeout(1000)
-        field.dblclick()
-        frame.locator("input[data-hint*='ABCALIMIT-LIMIT_AM']").fill(info["si"])
-        page.wait_for_timeout(1000)
-        page.keyboard.press("F8")
+        if float(sum_insured.replace(",", "")) == 0:
+            page.wait_for_timeout(1000)
+            field.dblclick()
+            frame.locator("input[data-hint*='ABCALIMIT-LIMIT_AM']").fill(info["si"])
+            page.wait_for_timeout(1000)
+            page.keyboard.press("F8")
+    else:
+        pass
 
     # -------- Complete Business Transaction --------
     page.wait_for_timeout(1000)
@@ -191,7 +205,7 @@ def pc_contract(frame, page):
     contract_start = frame.locator("input[title='Technical Contract Start']").input_value()
     print(f"Contract Start Date: {contract_start} | End Date: {end_date}")
 
-    # --------- RISK Insured Object ---------
+    # ======== RISK Insured Object =========
     frame.get_by_role("tab", name="Risk").click()
 
     frame.get_by_role("button", name="Detail").click()
@@ -202,13 +216,16 @@ def pc_contract(frame, page):
     page.wait_for_timeout(3000)
 
     # --------- Year of Manufacturer ----------
-    manufacturer = frame.locator("input[title*='Construction Year of Vehicle']")
-    expect(manufacturer).not_to_have_value("", timeout=30000)
-    manufacture_year = int(manufacturer.input_value())
-    age = datetime.now().year - manufacture_year
-
-    if age >= 20:
-        manufacturer.fill("2020")
+    coverage_type = info["coverage_type"]
+    if coverage_type == "Comprehensive":
+        manufacturer = frame.locator("input[title*='Construction Year of Vehicle']")
+        expect(manufacturer).not_to_have_value("", timeout=30000)
+        manufacture_year = int(manufacturer.input_value())
+        age = datetime.now().year - manufacture_year
+        if age >= 20:
+            manufacturer.fill("2020")
+        else:
+            pass
     else:
         pass
 
@@ -244,6 +261,7 @@ def pc_contract(frame, page):
     print(f"Engine Capacity: {engine_capacity} | Seating Capacity: {sc}" )
     frame.get_by_role("textbox", name="Unit Type Required").click()
     frame.get_by_role("option", name="CC CC").click()
+
     page.wait_for_timeout(1000)
     page.keyboard.press("F8")
     page.wait_for_timeout(1000)
@@ -254,6 +272,7 @@ def pc_coverage(frame, page):
     info = get_vehicle_info("PC")
     # ------------ Coverage -------------
     covpac = info["covpac"]
+    print("Coverage: ", covpac)
     page.wait_for_timeout(3000)
     frame.get_by_text(covpac).dblclick()
     frame.get_by_text(covpac, exact=True).click()
@@ -261,18 +280,20 @@ def pc_coverage(frame, page):
     frame.get_by_text(covpac, exact=True).dblclick()
 
     # -------- Limit / Deductible --------
-    frame.get_by_role("tab", name="Limit/Deductible").click()
+    if covpac != "Third Party Liability":
+        frame.get_by_role("tab", name="Limit/Deductible").click()
 
-    field = frame.locator("span[id$='#1,2#if']")
-    sum_insured = field.inner_text().strip()
+        field = frame.locator("span[id$='#1,2#if']")
+        sum_insured = field.inner_text().strip()
 
-    # ------ Sum Insured ------
-    if float(sum_insured.replace(",", "")) == 0:
-        page.wait_for_timeout(1000)
-        field.dblclick()
-        frame.locator("input[data-hint*='ABCALIMIT-LIMIT_AM']").fill(info["si"])
-        page.wait_for_timeout(1000)
-        page.keyboard.press("F8")
+        if float(sum_insured.replace(",", "")) == 0:
+            page.wait_for_timeout(1000)
+            field.dblclick()
+            frame.locator("input[data-hint*='ABCALIMIT-LIMIT_AM']").fill(info["si"])
+            page.wait_for_timeout(1000)
+            page.keyboard.press("F8")
+    else:
+        pass
 
     # ---------- Clause - Named Driver ----------
     if covpac == "Comprehensive":
@@ -289,15 +310,17 @@ def pc_coverage(frame, page):
         page.keyboard.type("NAMED DRIVER")
         page.keyboard.press("Enter")
     else:
-        print("It is not an Comprehensive Coverage")
+        pass
 
     # -------- Complete Business Transaction --------
     page.wait_for_timeout(1000)
     frame.get_by_role("button", name="Complete Business Transaction").click()
 
-def release(frame, page, product, contract_start):
+def release(frame, page, product, contract_start, user):
     # -------- Policy Number --------
     page.wait_for_timeout(1000)
+    app = frame.get_by_role("textbox", name="Application Number").input_value()
+    print("Application Number -", app)
     policy_number = frame.locator("input[title*='Policy Number']").input_value()
     print(f"Policy Number - {policy_number}")
 
@@ -331,9 +354,14 @@ def release(frame, page, product, contract_start):
         today = datetime.now().strftime("%d.%m.%y")
 
         with open(r"SAP\policy_numbers.txt", "a") as file:
-            file.write(f"{product} - {policy_number} - {contract_start} - {today}\n")
+            file.write(f"{product} - {policy_number} - {contract_start} - {today} - {user}\n")
 
         print("Policy stored in text file")
+        page.wait_for_timeout(5000)
+        frame.get_by_role("button", name="Message Log").click()
+        page.wait_for_timeout(5000)
+        path = os.path.join("SAP", "ISM", f"message_log_{policy_number}.png")
+        page.screenshot(path=path, full_page=True)
 
 
 def service(frame, page):
