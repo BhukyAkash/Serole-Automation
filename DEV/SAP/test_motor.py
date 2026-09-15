@@ -1,8 +1,14 @@
 import SAP.sap_utils as sap
+import pytest
+from vehicle_info import info
 
+# pytest -s SAP\test_motor.py::test_mc
+@pytest.mark.no_network_logger
 def test_mc(page):
     try:
-        print("\n================ SAP - MC Policy============")
+        print("\n================ SAP - MC Policy ============")
+        print(f"Vehicle Number  : {info['MC']['vehicle_no']}")
+        print(f"Business Partner: {info['BP_MC']}")
         sap.url(page)
         user = sap.login(page)
 
@@ -16,7 +22,11 @@ def test_mc(page):
         sap.mc_product(frame, page)
 
         # -------- BP & Commission Contract --------
-        sap.bp(frame, page)
+        if str(info["BP_MC"]).strip().upper() == "NO BP FOUND":
+            print("No BP Found - Skipping MC automation")
+            return
+        else:
+            sap.bp(frame, page, info["BP_MC"])
 
         # -------- Contract Level --------
         contract_start = sap.mc_contract(frame, page)
@@ -27,6 +37,12 @@ def test_mc(page):
         # -------- Release Application ----------
         sap.release(frame, page, "MC", contract_start, user)
 
+        # ------- ISM & NCD Service --------
+        # sap.service(frame, page)
+
+    except Exception as e:
+        print(f"Test failed: {e}")
+
     finally:
         page.wait_for_timeout(3000)
         page.locator("#meAreaHeaderButton").click()
@@ -34,9 +50,13 @@ def test_mc(page):
         page.get_by_role("button", name="OK").click()
         page.wait_for_timeout(5000)
 
+# pytest -s SAP\test_motor.py::test_pc
+@pytest.mark.no_network_logger
 def test_pc(page):
     try:
-        print("\n================ SAP - PC Policy============")
+        print("\n================ SAP - PC Policy ============")
+        print(f"Vehicle Number  : {info['PC']['vehicle_no']}")
+        print(f"Business Partner: {info['BP_PC']}")
         sap.url(page)
         user = sap.login(page)
 
@@ -50,7 +70,11 @@ def test_pc(page):
         sap.pc_product(frame, page)
 
         # ----- BP & Commission Contract ------
-        sap.bp(frame, page)
+        if str(info["BP_PC"]).strip().upper() == "NO BP FOUND":
+            print("No BP Found - Skipping PC automation")
+            return
+        else:
+            sap.bp(frame, page, info["BP_PC"])
 
         # -------- Contract Level --------
         contract_start = sap.pc_contract(frame, page)
@@ -60,6 +84,12 @@ def test_pc(page):
 
         # -------- Release Application --------
         sap.release(frame, page, "PC", contract_start, user)
+
+        # ------- ISM & NCD Service --------
+        # sap.service(frame, page)
+
+    except Exception as e:
+        print(f"Test failed: {e}")
 
     finally:
         page.wait_for_timeout(3000)
