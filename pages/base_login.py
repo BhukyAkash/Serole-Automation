@@ -11,8 +11,8 @@ def login(page):
 
     #  ------ Credentials -------
     load_dotenv()
-    username = os.getenv("vijay")
-    password = os.getenv("vij_pass")
+    username = os.getenv("uat_user")
+    password = os.getenv("uat_pass")
 
     page.get_by_role("textbox", name="Username or email").fill(username)
     page.get_by_role("textbox", name="Password").fill(password)
@@ -93,23 +93,25 @@ def start_date(page):
     print("Inception Date: ", inception_date)
 
 def manager_approval(manager_page):
-    load_dotenv()
-    bm_user = os.getenv("bm_user")
-    password = os.getenv("bm_pass")
-    manager_page.get_by_role("textbox", name="Username or email").fill(bm_user)
-    manager_page.get_by_role("textbox", name="Password").fill(password)
-    manager_page.get_by_role("button", name="Login").click()
-    manager_page.wait_for_timeout(25000)
-    # === Approve the quote ===
-    manager_page.get_by_role("button", name="Accept & Process").click()
-    print("Manager approval done")
-    manager_page.wait_for_timeout(10000)
+    try:
+        load_dotenv()
+        bm_user = os.getenv("bm_user")
+        password = os.getenv("bm_pass")
+        manager_page.get_by_role("textbox", name="Username or email").fill(bm_user)
+        manager_page.get_by_role("textbox", name="Password").fill(password)
+        manager_page.get_by_role("button", name="Login").click()
+        manager_page.wait_for_timeout(25000)
+        # === Approve the quote ===
+        manager_page.get_by_role("button", name="Accept & Process").click()
+        print("Manager approval done")
+        manager_page.wait_for_timeout(10000)
     # --- Manager Logout ---
-    manager_page.get_by_text(bm_user, exact=True).click()
-    manager_page.get_by_text("Sign Out", exact=True).click()
-    print("Terminated the Manager session")
-    manager_page.wait_for_timeout(5000)
-    manager_page.close()
+    finally:
+        manager_page.get_by_text(bm_user, exact=True).click()
+        manager_page.get_by_text("Sign Out", exact=True).click()
+        print("Terminated the Manager session")
+        manager_page.wait_for_timeout(5000)
+        manager_page.close()
 
 def issue_policy(page):
     page.get_by_role("button", name="Proceed to Policy Issuance").click()

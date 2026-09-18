@@ -25,43 +25,48 @@ def test_mc_motor(page):
         navigation(page)
         pc_moto(page)
 
-        # ---- Load MC vehicle info ----
+        # ---- Load PC vehicle info ----
         vehicle_info = get_vehicle_info("MC")
 
-        # ========= FIRST SCREEN ===========
+        # ---- Select Place of Use only once ----
+        page.locator(".mat-select-placeholder").first.click()
+        page.get_by_role("option",name=vehicle_info["place_of_use"]).click()
 
-        # ---- VEHICLE REG ----
-        vehicle_data = get_vehicle_data("MC")
-        if vehicle_data is None:
-            return
+        # ========= PROCESS VEHICLE ROWS ===========
+        while True:
+            # ---- Get next PC vehicle from Excel ----
+            vehicle_data = get_vehicle_data("MC")
 
-        print(f"Vehicle Regio: {vehicle_data["vehicle_reg_no"]}")
-        print(f"MY KadID: {vehicle_data["mykad"]}")
+            if vehicle_data is None:
+                print("No more MC vehicle data found")
+                break
 
-        # ---- START NETWORK LOGGING (bp, ncdRequestV2, quote) ----
-        page.net_logger.set_vehicle_reg(vehicle_data["vehicle_reg_no"])
+            print(f"Vehicle Regio: {vehicle_data['vehicle_reg_no']}")
+            print(f"MY KadID: {vehicle_data['mykad']}")
 
-        # ---- FILL VEHICLE REGISTRATION NUMBER ----
-        page.get_by_role("textbox").first.fill(vehicle_data["vehicle_reg_no"])
+            # ---- BP & NCDRequestV2 Service Logs ----
+            page.net_logger.set_vehicle_reg(vehicle_data["vehicle_reg_no"])
 
-        #---- Place of Use ----
-        page.locator(".mat-select-placeholder").click()
-        page.get_by_role("option", name=vehicle_info["place_of_use"]).click()
+            # ---- Vehicle Registration ----
+            vehicle_reg = page.get_by_role("textbox").first
+            vehicle_reg.fill(vehicle_data["vehicle_reg_no"])
 
-        # ---- Vehicle Search ----
-        page.get_by_role("button", name="search Vehicle Search").click()
-        page.wait_for_timeout(5000)
+            # ---- Search Vehicle ----
+            page.get_by_role("button",name="search Vehicle Search").click()
+            page.wait_for_timeout(5000)
 
-        # ------- Active Policy Exists -------
-        try:
+            # ------- Renewal Popup -------
             renewal_popup = page.locator("mat-dialog-content",has_text="Insurance can be only renewed within 60 days prior to expiry.")
             if renewal_popup.is_visible(timeout=3000):
                 print("Renewal popup displayed")
                 page.locator("span.popup-close").click()
-                mark_policy_issued(vehicle_data["vehicle_type"], vehicle_data["claimed_row"])
-                return
-        except Exception:
-            pass
+                mark_policy_issued(vehicle_data["vehicle_type"],vehicle_data["claimed_row"])
+                print(f"==== Vehicle {vehicle_data['vehicle_reg_no']} marked as CLAIMED ====")
+                continue
+
+            # ------- No Renewal Popup -------
+            print("Renewal popup not displayed")
+            break
 
         try:
             page.get_by_role("menuitem", name="edit").click(timeout=7000)

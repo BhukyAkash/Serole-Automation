@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from base_login import incep_date, issue_policy, login, navigation, cv_moto, motor_prem, quote_letter, policy_letter
 from utils.excel_utils import get_vehicle_data, cv_excel, mark_policy_issued, reset_on_error
 from vehicle_info import get_vehicle_info, AUTOMATION_FLAGS, motor_business_adrs
-from utils.extension import cv_extension
+from utils.extension import cv_extension, cv_trailer
 from utils.nstp_flow import nstp_flow
 from utils.test_mail import send_email
 
@@ -154,7 +154,13 @@ def test_cv_motor(page):
             cv_extension(page, selected_coverage, flags)
         else:
             print("No Extensions Selected")
-        
+
+        # ====== Trailer ======
+        if flags["trailer"]:
+            cv_trailer(page)
+        else:
+            print("No Trailers Included")
+
         #---- SAVE & NEXT BUTTON -----
         try:
             page.get_by_role("button", name="Save & Next").click()

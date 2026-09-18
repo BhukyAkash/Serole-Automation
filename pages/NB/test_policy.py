@@ -1,9 +1,10 @@
-
+# pytest -s nb\test_policy.py
 
 # # ============ SAMPLE FILE FOR PRACTICE ===========
 
 
-import re, pytest
+import re, pytest, os
+from openpyxl import load_workbook
 import time
 from vehicle_info import get_vehicle_info, ADRESS
 
@@ -435,6 +436,8 @@ from vehicle_info import get_vehicle_info, ADRESS
 
 #         frame = page.locator("iframe[title='Application']").content_frame
 
+
+
 #         frame.get_by_role("textbox", name="Policy Start Required").click()
 #         frame.get_by_role("textbox", name="Policy Start Required").fill("21.07.2026")
 #         frame.get_by_role("textbox", name="Submission To PP Date Required").click()
@@ -528,19 +531,138 @@ from vehicle_info import get_vehicle_info, ADRESS
 #         page.get_by_role("button", name="OK").click()
 
 
-from test_pc import  test_pc_motor
+# from test_pc import  test_pc_motor
+
+# @pytest.mark.no_network_logger
+# def test_demo(page):
+#     try:
+#         test_pc_motor(page)
+#     except:
+#         pass
+#     try:
+#         test_pc_motor(page)
+#     except:
+#         pass
+#     try:
+#         test_pc_motor(page)
+#     except:
+#         pass
+
+
+# ========================= OT Testing =============================
+def policy_num(sheet_name):
+    excel_path = os.path.join(os.path.dirname(__file__), "Prod.xlsx")
+    wb = load_workbook(excel_path)
+    sheet = wb[sheet_name]
+
+    row = 2
+
+    while True:
+        policy_val = sheet.cell(row=row, column=1).value
+        status_val = sheet.cell(row=row, column=2).value
+
+        if policy_val is None:
+            wb.close()
+            raise ValueError(f"No more Policy numbers in '{sheet_name}'")
+
+        status = "" if status_val is None else str(status_val).strip().upper()
+
+        if status in ("TRUE", "RUNNING"):
+            row += 1
+            continue
+
+        if status == "":
+            sheet.cell(row=row, column=2).value = "RUNNING"
+            wb.save(excel_path)
+            break
+
+        row += 1
+
+    policy_number = str(policy_val).strip()
+
+    return policy_number, sheet, wb, excel_path, row
+
+
+def save(sheet, wb, excel_path, row, status):
+    sheet.cell(row=row, column=2).value = status
+    wb.save(excel_path)
+    wb.close()
+
+
+def reset_running(sheet, wb, excel_path, row):
+    sheet.cell(row=row, column=2).value = ""
+    wb.save(excel_path)
+    wb.close()
 
 @pytest.mark.no_network_logger
-def test_demo(page):
+def test_letter(page):
+    policy, sheet, wb, excel_path, row = policy_num("Sheet1")
     try:
-        test_pc_motor(page)
-    except:
-        pass
-    try:
-        test_pc_motor(page)
-    except:
-        pass
-    try:
-        test_pc_motor(page)
-    except:
-        pass
+        page.goto("https://tus4appprod1.tuneprotect.com:44300/sap/bc/ui2/flp?appState=lean#ZPM_SEM_OBJ-lookup")
+
+        print(f"Policy Number: {policy}")
+
+        page.get_by_role("textbox", name="User").click()
+        page.get_by_role("textbox", name="User").fill("PMSUPPORT")
+        page.get_by_role("textbox", name="Password").click()
+        page.get_by_role("textbox", name="Password").fill("Tune@1128")
+        page.get_by_role("button", name="Log On").click()
+
+        page.get_by_label("User").fill("PMSUPPORT")
+        page.get_by_label("Password").fill("Tune@1128")
+        page.get_by_role("button", name="Log On").click()
+        page.wait_for_load_state("networkidle")
+
+        frame = page.frame_locator('iframe[title="Application"]')
+
+        page.get_by_label("More groups").click()
+        page.locator("[id=\"__item1-__list0-39-content\"]").get_by_text("Policy Management").click()
+        page.wait_for_timeout(3000)
+        print("Navigated to Policy Management")
+        with page.expect_popup() as page1_info:
+            page.get_by_role("link", name="Inquiry").first.click()
+        page1 = page1_info.value
+        print("In Inquiry Tile")
+
+        frame = page1.frame_locator('iframe[title="Application"]')
+
+        frame.get_by_role("textbox", name="Policy Number").fill(policy)
+        page1.keyboard.press("Enter")
+
+        page1.wait_for_timeout(3000)
+        page1.keyboard.press("F8")
+        page1.wait_for_timeout(3000)
+
+        frame.get_by_role("button", name="Services for Object").click()
+        frame.get_by_role("cell", name="OpenText Workspace").click()
+        print("Opening OT Workspace")
+
+        #frame.get_by_text("Business Workspace").click()
+
+        workspace = page1.locator('iframe[title="Application"]').content_frame.locator('iframe[name="itshtmlvwrfnC250"]').content_frame
+
+        policy_issuance = workspace.get_by_role("link", name="04 Policy Issuance", description="04 Policy Issuance Endorsement and Renewal")
+        policy_issuance.click(timeout=0)
+        print("Opening Policy Schedule folder")
+
+        policy_link = frame.locator('iframe[name="itshtmlvwrfnC250"]').content_frame.get_by_role("link",name=re.compile(r"^Policy_NewBusiness_"))
+        policy_present = False
+        policy_link.first.wait_for(state="visible", timeout=30000)
+        
+        policy_present = policy_link.count() > 0    
+
+        print("Policy Schedule Present:", policy_present)
+        save(sheet, wb, excel_path, row, policy_present)
+
+    except Exception:
+        reset_running(sheet, wb, excel_path, row)
+        raise
+
+    finally:
+        page.wait_for_timeout(3000)
+        page.locator("#meAreaHeaderButton").click()
+        page.get_by_text("Sign Out").click()
+        page.get_by_role("button", name="OK").click()
+        page.wait_for_timeout(5000)
+
+# ========================================================================================

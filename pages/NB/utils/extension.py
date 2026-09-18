@@ -1,3 +1,5 @@
+from datetime import datetime 
+
 # ------ PC Extensions ------
 def pc_extension(page, coverage_type, flags):
 
@@ -30,7 +32,7 @@ def pc_extension(page, coverage_type, flags):
     if flags["select_extensions"]:
         if coverage_type == "Comprehensive":
             extensions = [
-                "check All Drivers",
+                # "check All Drivers",
                 "Windscreen Damage",
                 "Inclusion of Special Perils",
                 "Legal Liability to Passenger (LLP)",
@@ -166,3 +168,38 @@ def cv_extension(page, coverage_type, flags):
             print(f"{extension_name} selected successfully")
     else:
         print("No extensions selected")
+
+def cv_trailer(page):
+    page.get_by_role("button", name="Add add").click()
+    page.locator("mat-form-field").filter(has_text="Trailer # *").locator("#vehicleRegNo").fill("1111111321")
+    page.locator("mat-form-field").filter(has_text="Chassis # *").locator("#vehicleChassisNo").fill("124346256")
+
+    page.locator("mat-select#vehicleMake").first.click()
+    page.get_by_role("option", name="VOLVO").click()
+
+    page.locator("mat-select#model").click()
+    page.get_by_role("option", name="PAVERS").click()
+
+    page.locator("mat-select#yearOfManufacture").click()
+    page.get_by_role("option", name="2024").click()
+
+    page.locator("mat-form-field").filter(has_text="Carrying Capacity *").locator("#carryingCapacity").fill("11")
+
+    page.locator("mat-select#tonnesAndKilograms").click()
+    page.get_by_role("option", name="Kg").click()
+
+    page.locator("mat-select#carriageGoods").click()
+    page.get_by_role("option", name="General Cargo").click()
+
+    page.locator("mat-select#coverType").click()
+    page.get_by_role("option", name="Comprehensive").click()
+
+    today = datetime.today().strftime("%d-%m-%Y")
+    page.locator("app-trailer-attachment input#inceptionDate").fill(today)
+
+    page.locator("mat-form-field").filter(has_text="Trailer Sum Insured *MYR").locator("#marketValue").click()
+    page.locator("mat-form-field").filter(has_text="Trailer Sum Insured *MYR").locator("#marketValue").fill("10000")
+
+    page.keyboard.press("Tab")
+
+    page.locator("app-trailer-attachment").get_by_role("button", name="Save").click()

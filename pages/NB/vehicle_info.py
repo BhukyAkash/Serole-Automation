@@ -5,12 +5,12 @@ VEHICLE_INFO = {
 
         # ---- Make / Model / Year ----
         "change_vehicle": False,
-        "make": "HONDA",
-        "model": "HR-V",
+        "make": "TOYOTA",
+        "model": "HILUX",
         "variant" : "NA",
 
         "year_of_manufacture": False,
-        "year": "2021",
+        "year": "2023",
 
         # ---- Capacities ----
         "engine_capacity": "1200",
@@ -18,7 +18,7 @@ VEHICLE_INFO = {
 
         # ---- Coverage ----
         "change_coverage": False,
-        "coverage_type": "Comprehensive",  # "Comprehensive" or "TP, Fire & Theft" "Third Party"
+        "coverage_type": "Comprehensive",  # "Comprehensive" or "Third Party Fire & Theft" "Third Party"
 
     },
     "MC": {
@@ -62,16 +62,16 @@ VEHICLE_INFO = {
 
         # ---- Capacities ----
         "engine_capacity": "1200",
-        "seating_capacity": "2",
-        "carrying_capacity": "1",
+        "seating_capacity": "5",
+        "carrying_capacity": "10",
         "carrying_capacity_unit": "Tonnes",  # "Tonnes" or "Kg"
 
         # ---- Carriage Goods ----
         "carriage_goods": "Beverages Bottles",
 
         # ---- Coverage ----
-        "change_coverage": True,
-        "coverage_type": "TP, Fire & Theft",  # "Comprehensive" or "TP, Fire & Theft"
+        "change_coverage": False,
+        "coverage_type": "Third Party Fire & Theft",  # "Comprehensive" or "Third Party Fire & Theft"
 
         # --- Sum Insured ---
         "sum_insured": "10000",
@@ -96,7 +96,7 @@ AUTOMATION_FLAGS = {
 
     "PC": {
         "explore_extensions":   True,   # Click on Extension Coverage button?
-        "select_autobuddy":     False,  # Select Autobuddy package?
+        "select_autobuddy":     False,   # Select Autobuddy package?
         "select_extensions":    False,   # Select individual extensions?
     },
 
@@ -104,6 +104,7 @@ AUTOMATION_FLAGS = {
         "explore_extensions":   True,  # Click on Extension Coverage button?
         "select_autobuddy":     False,  # Select Motorist PA package?
         "select_extensions":    False,  # Select individual extensions?
+        "trailer":              False,
     },
 }
 
