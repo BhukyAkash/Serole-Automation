@@ -232,6 +232,7 @@ def test_pc_motor(page):
             reset_on_error("PC", claimed_row)
         raise
 
+
     finally:
         page.get_by_text("Murali Mohan", exact=True).click()
         page.get_by_text("Sign Out", exact=True).click()

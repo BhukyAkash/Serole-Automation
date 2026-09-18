@@ -6,9 +6,9 @@ EXCEL_PATH = os.path.join(CURRENT_DIR, "..", "SIT", "Test Data.xlsx")
 
 # ==== Input: Motor Test Data ======
 VEHICLE_CONFIG = {
-    "CV": {"reg_col": 11,  "ic_col": 12,  "used_col": 13},   # A, B, D
-    "PC": {"reg_col": 6,  "ic_col": 7,  "used_col": 8},   # F, G, I
-    "MC": {"reg_col": 1, "ic_col": 2, "used_col": 4},  # K, L, N
+    "MC": {"reg_col": 1, "ic_col": 2, "used_col": 4},      # A, B, D
+    "PC": {"reg_col": 6, "ic_col": 7,  "used_col": 8},     # F, G, H
+    "CV": {"reg_col": 11, "ic_col": 12,  "used_col": 13},  # K, L, N
 }
 
 def get_vehicle_data(vehicle_type):

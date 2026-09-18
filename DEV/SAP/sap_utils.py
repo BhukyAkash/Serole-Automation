@@ -445,8 +445,8 @@ def travel_contract(frame, page):
         frame.get_by_role("textbox", name="Trip").click()
         frame.get_by_text("One Way", exact=True).click()
 
-        frame.get_by_role("textbox", name="Depature Country").click()
-        frame.get_by_text("Andorra", exact=True).click()
+        frame.get_by_role("textbox", name="Depature Country").fill("MY")
+        page.keyboard.press("Enter")
 
     # ===== Risk - IO Level ========
     frame.get_by_role("tab", name="Risk").click()
@@ -464,17 +464,18 @@ def travel_contract(frame, page):
     return product, contract_start
 
 def travel_coverage(frame, page):
-    coverage = air_aisa["travel"]["coverage"]
-    page.wait_for_timeout(3000)
-    frame.get_by_text(coverage, exact=True).dblclick()
-    page.wait_for_timeout(2000)
-    scroll_and_click_nav_cell(frame, page, coverage)
+    coverages = air_aisa["travel"]["coverage"]
+    for coverage in coverages:
+        page.wait_for_timeout(3000)
+        frame.get_by_text(coverage, exact=True).dblclick()
+        page.wait_for_timeout(2000)
+        scroll_and_click_nav_cell(frame, page, coverage)
 
-    # ========= Limit/Deductible =========
-    frame.get_by_role("tab", name="Limit/Deductible").click()
-    frame.locator('span[id$="#1,2#if"]').dblclick()
-    frame.get_by_role("textbox", name="Limit Amount(SI)").click()
-    frame.get_by_role("textbox", name="Limit Amount(SI)").fill(air_aisa["travel"]["si"])
-    frame.get_by_role("button", name="Copy  Emphasized").click()
-    frame.get_by_role("button", name="Complete Business Transaction").click()
-    frame.get_by_role("button", name="Save  Emphasized").click()
+        # ========= Limit/Deductible =========
+        frame.get_by_role("tab", name="Limit/Deductible").click()
+        frame.locator('span[id$="#1,2#if"]').dblclick()
+        frame.get_by_role("textbox", name="Limit Amount(SI)").click()
+        frame.get_by_role("textbox", name="Limit Amount(SI)").fill(air_aisa["travel"]["si"])
+        frame.get_by_role("button", name="Copy  Emphasized").click()
+        frame.get_by_role("button", name="Complete Business Transaction").click()
+        frame.get_by_role("button", name="Save  Emphasized").click()
